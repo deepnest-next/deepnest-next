@@ -1,0 +1,47 @@
+{
+  "name": "deepnest-next",
+  "version": "2.0.0",
+  "author": {
+    "name": "Josef Fröhle",
+    "email": "dexus@deepnest.net",
+    "url": "https://www.deepnest.net/"
+  },
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "dev:tauri": "tauri dev",
+    "build:tauri": "tauri build",
+    "preview": "vite preview",
+    "prettier": "prettier src -c",
+    "prettier:fix": "prettier src -w",
+    "eslint": "eslint src",
+    "eslint:fix": "eslint src --fix",
+    "tauri": "tauri"
+  },
+  "license": "(AGPL-3.0-only OR LicenseRef-DeepnestNext-Commercial)",
+  "devDependencies": {
+    "@eslint/js": "9.28.0",
+    "@ianvs/prettier-plugin-sort-imports": "4.4.2",
+    "@tailwindcss/vite": "4.1.8",
+    "@types/node": "22.15.29",
+    "eslint": "9.28.0",
+    "eslint-config-prettier": "10.1.5",
+    "lightningcss": "1.30.1",
+    "prettier": "3.5.3",
+    "prettier-eslint-cli": "8.0.1",
+    "prettier-plugin-tailwindcss": "0.6.12",
+    "tailwindcss": "4.1.8",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.33.0",
+    "vite": "6.3.5",
+    "vite-plugin-solid": "2.11.6",
+    "vite-tsconfig-paths": "5.1.4"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.5.0",
+    "@tauri-apps/cli": "2.5.0",
+    "solid-js": "1.9.7"
+  }
+}

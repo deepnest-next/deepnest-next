@@ -1,0 +1,25 @@
+name: Update Bun Dependencies
+on: 
+  push:
+    branches:
+      - 'renovate/**'
+    paths:
+      - 'package.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository 🛎️
+        uses: actions/checkout@v4
+        
+      - name: Setup Bun runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+        
+      - name: Install frontend dependencies
+        run: bun install
+
+      - name: Build frontend application 🔧
+        run: bun run build
