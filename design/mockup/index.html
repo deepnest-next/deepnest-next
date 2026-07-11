@@ -154,7 +154,11 @@
   .toggle::after{content:"";position:absolute;top:2px;left:18px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .16s}
   .toggle.off{background:var(--sunk);border:1px solid var(--line)}.toggle.off::after{left:2px;background:var(--faint)}
   .markline{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mark);margin-top:8px}
-  .status{display:flex;align-items:center;gap:14px;padding:8px 14px;background:var(--panel);border-top:1px solid var(--line);font-size:12.5px}
+  .status{display:flex;align-items:center;gap:14px;padding:8px 14px;background:var(--panel);border-top:1px solid var(--line);font-size:12.5px;position:relative}
+  .unplbtn{border:0;background:transparent;padding:0;color:var(--muted);font-size:12.5px;display:flex;align-items:baseline;gap:6px;cursor:pointer}
+  .unplbtn:hover b{color:var(--warn)}
+  .unplPop{position:absolute;bottom:44px;left:150px;z-index:8;width:290px;background:var(--panel);border:1px solid var(--line-2);border-radius:12px;box-shadow:var(--shadow);padding:8px;display:none;flex-direction:column;gap:6px}
+  .unplPop.on{display:flex}
   .stat{display:flex;align-items:baseline;gap:6px;color:var(--muted);white-space:nowrap}
   .stat b{color:var(--ink);font-weight:650}.util b{color:var(--good);font-size:15px}
   .sep{width:1px;height:15px;background:var(--line)}
@@ -266,10 +270,11 @@
   </div>
 
   <footer class="status">
+    <div class="unplPop" id="unplPop"></div>
     <div class="snav"><button id="sprev" aria-label="Previous sheet">◀</button><span class="stat">Sheet <b class="num" id="snum">1 / 3</b></span><button id="snext" aria-label="Next sheet">▶</button></div>
     <span class="sep"></span>
     <div class="stat"><b class="num" id="placed">0</b> placed</div>
-    <div class="stat"><b class="num">0</b> unplaced</div><span class="sep"></span>
+    <button class="unplbtn" id="unplBtn"><b class="num" id="unplaced">0</b> unplaced</button><span class="sep"></span>
     <div class="stat util">Util <b class="num" id="util">0.0%</b></div>
     <div class="orderbar" id="orderbar" title="Placement order"></div>
     <div class="stat phase" id="phase">—</div>
@@ -542,7 +547,15 @@
     $("results").querySelectorAll(".rescard").forEach(c=>c.addEventListener("click",()=>{applyVariant(c.dataset.id);if(selName)selectPart(selName);run();}));
     if(!list.find(v=>v.name===$("resname").textContent)&&list[0])applyVariant(list[0].id);
   }
-  function applyVariant(id){const v=variants.find(x=>x.id===id);if(!v)return;$("resname").textContent=v.name;document.querySelectorAll(".rescard").forEach(c=>c.classList.toggle("sel",c.dataset.id===id));if(!selName)renderRight(null);}
+  function applyVariant(id){const v=variants.find(x=>x.id===id);if(!v)return;$("resname").textContent=v.name;document.querySelectorAll(".rescard").forEach(c=>c.classList.toggle("sel",c.dataset.id===id));if(!selName)renderRight(null);updateUnplaced();}
+  function updateUnplaced(){
+    const v=curVar(),n=18-(v.optP||0);
+    $("unplaced").textContent=n;$("unplaced").style.color=n>0?"var(--warn)":"";
+    $("unplPop").innerHTML=n>0
+      ?`<div class="issuei"><span class="warn w">!</span><div><b>Spacer disc × ${n}</b><br><span>Optional — didn't fit; add a sheet or a remnant.</span></div><button class="btn" id="unplLoc">Show</button></div><div style="font-size:11px;color:var(--faint);padding:4px 6px">Required parts: all 85 placed ✓</div>`
+      :`<div class="issuei">All parts placed 🎉</div>`;
+    const l=$("unplLoc");if(l)l.addEventListener("click",()=>{const row=[...document.querySelectorAll('.row')].find(r=>r.dataset.name==='Spacer disc (optional)');if(row)selectPart('Spacer disc (optional)',row);$("unplPop").classList.remove("on");});
+  }
 
   /* ---- material config strip ---- */
   function matStrip(m){
@@ -607,7 +620,7 @@
       <div class="field"><label>Cost source</label><div class="segmini"><button class="on">Manual</button><button>ERP / API</button><button>None</button></div></div>
       <div class="field"><label>Show cost to operator</label><button class="toggle ${cfg.showCost?'':'off'}" id="showCost"></button></div>`;}
     else if(s.gatune){body+=`<div class="srow"><span style="min-width:90px">Population</span><input class="slider" type="range" min="4" max="60" value="10"><span class="chip">10</span></div><div class="srow"><span style="min-width:90px">Mutation</span><input class="slider" type="range" min="1" max="50" value="10"><span class="chip">10%</span></div>`;}
-    else if(s.io){body+=`<div class="field"><label>SVG normalizer</label><button class="toggle"></button></div><div class="field"><label>Endpoint tolerance</label><span class="chip">0.01 mm</span></div><div class="field"><label>DXF import units</label><span class="chip">mm</span></div><div class="field"><label>DXF export units</label><span class="chip">mm</span></div><div class="field"><label>Export sheet borders</label><button class="toggle"></button></div><div class="field"><label>Spacing between sheets</label><span class="chip">10 mm</span></div>`;}
+    else if(s.io){body+=`<div class="field"><label>SVG normalizer</label><button class="toggle"></button></div><div class="field"><label>Endpoint tolerance</label><span class="chip">0.01 mm</span></div><div class="field"><label>DXF import units</label><span class="chip">mm</span></div><div class="field"><label>DXF export units</label><span class="chip">mm</span></div><div class="field"><label>Export sheet borders</label><button class="toggle"></button></div><div class="field"><label>Spacing between sheets</label><span class="chip">10 mm</span></div><div class="field"><label>Export: file per sheet</label><div class="seggrp" style="min-width:230px"><button class="on">One per sheet</button><button>Single multi-sheet</button></div></div><div class="field"><label>Label parts on export (mark layer)</label><button class="toggle"></button></div><div class="field"><label>Print dimensions on parts</label><button class="toggle off"></button></div>`;}
     else if(s.cpu){body+=`<div class="field"><label>Automatic — use all cores</label><button class="toggle ${cpuAuto?'':'off'}" id="cpuAuto"></button></div><div class="srow"><span class="vsub" style="font-size:12px">1</span><input class="slider" type="range" min="1" max="32" value="${s.val}" id="cpuSlider" ${cpuAuto?'disabled':''}><span class="vsub" style="font-size:12px">32</span><span class="chip" id="cpuVal">${cpuAuto?'auto':s.val+' cores'}</span></div>`;}
     else if(s.place){body+=`<div class="viz" id="viz">${placeViz(s.segOn)}</div><div class="seggrp" id="pseg">${s.seg.map((o,i)=>`<button class="${i===s.segOn?'on':''}">${o}</button>`).join("")}</div>`;}
     else{
@@ -627,6 +640,7 @@
     const ca=$("cpuAuto");if(ca)ca.addEventListener("click",()=>{cpuAuto=!cpuAuto;ca.classList.toggle("off",!cpuAuto);const sl2=$("cpuSlider");if(sl2)sl2.disabled=cpuAuto;const cv=$("cpuVal");if(cv)cv.textContent=cpuAuto?'auto':(sl2?sl2.value:8)+' cores';settings.find(x=>x.cpu).v=cpuAuto?'Auto':(sl2?sl2.value:8)+' cores';markVals();});
     const cs2=$("cpuSlider");if(cs2)cs2.addEventListener("input",()=>{settings.find(x=>x.cpu).val=+cs2.value;$("cpuVal").textContent=cpuAuto?'auto':cs2.value+' cores';if(!cpuAuto){settings.find(x=>x.cpu).v=cs2.value+' cores';markVals();}});
     const pseg=$("pseg");if(pseg)pseg.querySelectorAll("button").forEach((b,i)=>b.addEventListener("click",()=>{const sp=settings[curSet];sp.segOn=i;sp.v=sp.seg[i];pseg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");$("viz").innerHTML=placeViz(i);markVals();}));
+    $("sview").querySelectorAll(".toggle:not([id])").forEach(t=>t.addEventListener("click",()=>t.classList.toggle("off")));
   }
   function markVals(){$("slist").querySelectorAll(".sitem").forEach(b=>{const v=settings[+b.dataset.i].v;b.querySelector(".v").textContent=v;});}
 
@@ -644,6 +658,8 @@
   $("theme").onclick=()=>{const r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");r.setAttribute("data-theme",cur==="dark"?"light":"dark");};
   sheet.addEventListener("click",e=>{if(!e.target.closest(".piece")&&selName)selectPart(selName);});
 
+  $("unplBtn").addEventListener("click",e=>{e.stopPropagation();$("unplPop").classList.toggle("on");});
+  document.addEventListener("click",e=>{if(!e.target.closest("#unplPop")&&!e.target.closest("#unplBtn"))$("unplPop").classList.remove("on");});
   setMat("sheet");renderResults();applyVariant("ga");renderRight(null);buildOrderbar();applyVP();
   setTimeout(run,reduce?0:280);
 })();
