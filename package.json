@@ -30,7 +30,7 @@
     "eslint-config-prettier": "10.1.8",
     "lightningcss": "1.33.0",
     "prettier": "3.9.6",
-    "prettier-eslint-cli": "8.0.1",
+    "prettier-eslint-cli": "9.2.1",
     "prettier-plugin-tailwindcss": "0.8.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.8.3",
