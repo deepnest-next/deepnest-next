@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # System libraries required to build a Tauri v2 app on Linux, plus the
       # tooling needed to produce the `.rpm` bundle (`rpm`) and to patch the
