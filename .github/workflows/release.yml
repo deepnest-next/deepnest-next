@@ -82,7 +82,7 @@ jobs:
       # Always expose the produced bundles as downloadable workflow artifacts,
       # which is especially useful for `workflow_dispatch` runs without a tag.
       - name: Upload Linux bundles as workflow artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux-bundles
           path: |
