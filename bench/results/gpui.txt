@@ -1,0 +1,8 @@
+RESULT gpui-Builder n=1000 frames=97 frameMean=20.88 p50=16.75 p95=33.77 drawMean=8.615 drawP95=14.699
+RESULT gpui-Fan n=1000 frames=121 frameMean=16.72 p50=16.67 p95=18.60 drawMean=4.182 drawP95=7.584
+RESULT gpui-Builder n=5000 frames=49 frameMean=41.29 p50=41.07 p95=53.74 drawMean=30.287 drawP95=41.790
+RESULT gpui-Fan n=5000 frames=65 frameMean=30.86 p50=31.25 p95=43.66 drawMean=19.509 drawP95=28.964
+RESULT gpui-Builder n=10000 frames=30 frameMean=69.44 p50=67.26 p95=106.00 drawMean=56.329 drawP95=90.404
+RESULT gpui-Fan n=10000 frames=43 frameMean=46.91 p50=45.53 p95=83.20 drawMean=31.918 drawP95=53.045
+RESULT gpui-Builder n=25000 frames=19 frameMean=107.14 p50=101.85 p95=138.56 drawMean=90.432 drawP95=123.062
+RESULT gpui-Fan n=25000 frames=36 frameMean=55.76 p50=53.52 p95=75.38 drawMean=40.835 drawP95=62.685

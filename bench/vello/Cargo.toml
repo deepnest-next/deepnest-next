@@ -1,0 +1,11 @@
+[package]
+name = "vellobench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vello_cpu = "0.3"
+vello_gpu = { version = "0.3", default-features = false, features = ["wgpu_default"] }
+vello_common = "0.3"
+wgpu = "30"
+pollster = "0.4"
