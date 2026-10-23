@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "MyApp",
+  "productName": "Deepnest Next",
   "version": "2.0.0",
-  "identifier": "com.tauri-solid-ts-tailwind-vite.dev",
+  "identifier": "net.deepnest.next",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -12,10 +12,13 @@
   "app": {
     "windows": [
       {
-        "title": "app",
-        "width": 800,
-        "height": 600,
-        "resizable": true
+        "title": "Deepnest Next",
+        "width": 1280,
+        "height": 820,
+        "resizable": true,
+        "minWidth": 900,
+        "minHeight": 560,
+        "dragDropEnabled": false
       }
     ],
     "security": {
