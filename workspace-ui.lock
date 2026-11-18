@@ -1,0 +1,4 @@
+# Pinned workspace UI release (deepnest-next/workspace-ui). Update version + checksum together
+# from the release's SHA256SUMS. Installed by scripts/fetch-ui.sh into ui/dist.
+WORKSPACE_UI_VERSION=0.1.0
+WORKSPACE_UI_SHA256_tauri=5bb8ef3b65a08078ab6fd62fc3cd53aedf5182467e72a720acf994b71fe90145

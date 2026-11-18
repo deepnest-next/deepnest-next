@@ -160,3 +160,5 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+# workspace UI release (scripts/fetch-ui.sh)
+/ui/
