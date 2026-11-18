@@ -18,8 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: System libraries
-        # A stalled mirror connection once hung this step for 25 min (the job default is 6 h).
-        timeout-minutes: 10
+        # Mirrors are sometimes very slow (~100 kB/s for the 25 MB webkit package); bound the
+        # step anyway, the job default is 6 h.
+        timeout-minutes: 30
         run: |
           sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
           sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y libwebkit2gtk-4.1-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev \
