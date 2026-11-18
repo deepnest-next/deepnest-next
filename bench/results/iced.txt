@@ -1,0 +1,8 @@
+RESULT iced-Canvas n=1000 frames=118 frameMean=17.12 p50=16.72 p95=18.07 drawMean=2.097 drawP95=3.211
+RESULT iced-Shader n=1000 frames=121 frameMean=16.77 p50=16.68 p95=18.52 drawMean=0.000 drawP95=0.000
+RESULT iced-Canvas n=5000 frames=106 frameMean=18.98 p50=16.76 p95=33.60 drawMean=9.537 drawP95=12.859
+RESULT iced-Shader n=5000 frames=121 frameMean=16.69 p50=16.69 p95=18.96 drawMean=0.000 drawP95=0.000
+RESULT iced-Canvas n=10000 frames=61 frameMean=33.43 p50=33.17 p95=37.79 drawMean=17.737 drawP95=20.907
+RESULT iced-Shader n=10000 frames=121 frameMean=16.68 p50=16.67 p95=18.30 drawMean=0.000 drawP95=0.000
+RESULT iced-Canvas n=25000 frames=43 frameMean=47.25 p50=46.10 p95=65.62 drawMean=36.633 drawP95=41.798
+RESULT iced-Shader n=25000 frames=120 frameMean=16.77 p50=16.74 p95=19.06 drawMean=0.000 drawP95=0.000

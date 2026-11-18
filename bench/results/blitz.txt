@@ -1,0 +1,12 @@
+RESULT blitz-scene n=1000 frames=120 frameMean=16.74 p50=16.67 p95=17.49 drawMean=0.299 drawP95=0.448
+RESULT blitz-scene n=5000 frames=118 frameMean=17.11 p50=16.69 p95=17.95 drawMean=1.149 drawP95=1.406
+RESULT blitz-scene n=10000 frames=101 frameMean=20.02 p50=19.23 p95=29.26 drawMean=2.097 drawP95=2.462
+RESULT blitz-scene n=25000 frames=63 frameMean=32.26 p50=32.30 p95=38.12 drawMean=5.420 drawP95=5.923
+RESULT blitz-texture n=1000 frames=122 frameMean=16.63 p50=16.67 p95=22.17 drawMean=0.197 drawP95=0.316
+RESULT blitz-texture n=5000 frames=121 frameMean=16.67 p50=16.68 p95=21.71 drawMean=0.199 drawP95=0.293
+RESULT blitz-texture n=10000 frames=121 frameMean=16.67 p50=16.68 p95=19.91 drawMean=0.214 drawP95=0.298
+RESULT blitz-texture n=25000 frames=121 frameMean=16.68 p50=16.69 p95=19.48 drawMean=0.216 drawP95=0.299
+RESULT blitz-dom n=1000 frames=118 frameMean=17.13 p50=16.64 p95=19.25 drawMean=0.000 drawP95=0.000
+RESULT blitz-dom n=5000 frames=120 frameMean=16.80 p50=16.58 p95=19.47 drawMean=0.000 drawP95=0.000
+RESULT blitz-dom n=10000 frames=120 frameMean=16.71 p50=16.65 p95=20.40 drawMean=0.000 drawP95=0.000
+RESULT blitz-dom n=25000 frames=120 frameMean=16.84 p50=16.72 p95=19.93 drawMean=0.000 drawP95=0.000

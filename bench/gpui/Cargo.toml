@@ -1,0 +1,15 @@
+[package]
+name = "gpuibench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gpui = "0.2.2"
+
+[profile.release]
+debug = false
+
+# xattr 0.2.3 (via gpui_http_client -> zed-async-tar) uses libc::ENOATTR,
+# which current libc no longer exports on linux-gnu (it's ENODATA there).
+[patch.crates-io]
+xattr = { path = "patches/xattr-0.2.3" }

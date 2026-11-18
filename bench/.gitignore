@@ -1,0 +1,5 @@
+*/target/
+gpui/linkshim/
+blitz/linkshim/
+blitz/.cargo/
+*.err

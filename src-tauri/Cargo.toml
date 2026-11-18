@@ -25,6 +25,15 @@ serde_json = "1.0"
 serde = { version = "1.0.211", features = ["derive"] }
 tauri = { version = "~2.11", features = [] }
 tauri-plugin-devtools = "2"
+tauri-plugin-dialog = "2"
+
+# Nesting engine, linked in-process (same pins as rust-api-server and its `deepnest` CLI).
+# TODO: nest-adapters -> branch "main" once rust-api-server#84 (SVG mm import) is merged.
+nest-adapters = { git = "https://github.com/deepnest-next/rust-api-server", branch = "feat/nest-cli" }
+nesting-core = { git = "https://github.com/deepnest-next/rust-nesting-lib", branch = "main" }
+nesting-babushka = { git = "https://github.com/deepnest-next/rust-nesting-lib", branch = "main" }
+deepnest_dxf2svg-processor = { git = "https://github.com/deepnest-next/node-dxf2svg-processor", branch = "feat/rust-core-api", default-features = false }
+dxf = { version = "0.6", features = ["serialize"] }
 
 [features]
 default = [ "custom-protocol" ]

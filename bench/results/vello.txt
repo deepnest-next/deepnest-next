@@ -1,0 +1,11 @@
+# vellobench — Vello CPU (single-thread) & Vello GPU (wgpu/Vulkan), 1600x900
+CPU n=  1000 encodeMs=   1.39 renderMs=    1.51 totalMs=    2.91
+CPU n=  5000 encodeMs=   7.09 renderMs=    4.72 totalMs=   11.81
+CPU n= 10000 encodeMs=  13.12 renderMs=    8.16 totalMs=   21.28
+CPU n= 25000 encodeMs=  16.15 renderMs=    8.18 totalMs=   24.33
+# adapter: AMD Radeon RX 5700 (RADV NAVI10) (Vulkan)
+GPU n=  1000 encodeMs=   1.24 renderMs=    0.59 totalMs=    1.83
+GPU n=  5000 encodeMs=   6.35 renderMs=    2.04 totalMs=    8.39
+GPU n= 10000 encodeMs=  12.79 renderMs=    3.89 totalMs=   16.68
+GPU n= 25000 encodeMs=  16.41 renderMs=    4.01 totalMs=   20.42
+# done

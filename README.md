@@ -2,9 +2,23 @@
 
 This repo will be used for version 2.0 of deepnest.
 
-*this repo is currently a placeholder*
-
 If you like to support this project, keep an eye on our website https://www.deepnest.net where we will soon give more details.
+
+## Desktop app (work in progress)
+
+Tauri 2 + Solid + Tailwind. Import DXF/SVG parts, set sheet and spacing, nest, export a
+DXF/SVG cut file. The nesting engine (`nest-adapters` + `nesting-babushka`) runs in-process
+behind Tauri commands (`src-tauri/src/engine.rs`); the nest viewport is WebGL2
+(`src/lib/renderer.ts`) — see `bench/README.md` for why.
+
+```shell
+bun install
+bun run dev:tauri      # dev build with hot reload
+cd src-tauri && cargo test --lib   # engine tests
+```
+
+The engine crates are pulled from private git repositories, so building needs GitHub
+access to `deepnest-next/rust-api-server`, `rust-nesting-lib` and `node-dxf2svg-processor`.
 
 ## Licensing
 

@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>nest-viewport-bench</title></head>
+<body>
+<canvas id="cv" width="1600" height="900"></canvas>
+<canvas id="cv2d" width="1600" height="900" style="display:none"></canvas>
+<div id="svgwrap" style="width:1600px;height:900px;display:none"></div>
+<script type="module">
+// ---- nest-viewport-bench: SVG-DOM vs Canvas2D vs WebGL2 on the same sheet ----
+const W = 1600, H = 900;
+const cv = document.getElementById('cv');
+const cv2d = document.getElementById('cv2d');
+const svgwrap = document.getElementById('svgwrap');
+const PAL = ['#e6194b','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe','#008080','#e6beff','#9a6324','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000075','#808080'];
+
+function hex(s, r, cx, cy) { // hexagon points, flat-top
+  const pts = [];
+  for (let k = 0; k < 6; k++) {
+    const a = (Math.PI/3)*k;
+    pts.push([cx + r*Math.cos(a), cy + r*Math.sin(a)]);
+  }
+  return pts;
+}
+
+// Generate a honeycomb of n hexagons fitted into a rectangle.
+function gen(n) {
+  const r = 9, gap = 0.6;           // small cells -> many shapes
+  const rad = r + gap, w = rad*Math.sqrt(3);
+  const cols = Math.max(1, Math.floor(W/w));
+  const rows = Math.ceil(n/cols);
+  const shapes = [];
+  let y = H - Math.sqrt(3)/2*rad; // grow downward from top
+  for (let rw = 0; rw < rows && shapes.length < n; rw++) {
+    const offx = (rw%2) ? w/2 : 0;
+    for (let c = 0; c < cols && shapes.length < n; c++) {
+      const cx = offx + w*c + w/2, cy = y - rw*(Math.sqrt(3)/2*rad);
+      shapes.push(hex(r, cx, cy));
+    }
+  }
+  return shapes;
+}
+
+const gl = (function(){ try { const g = cv.getContext('webgl2', {antialias:false}); return g; } catch(e){ return null; } })();
+let glprog = null, glBuffers = null, glCount = 0, glLocT = null, glLocS = null, glLocZ = null;
+
+function glInit(shapes) {
+  const vs = `#version 300 es
+  in vec2 aPos; in vec3 aCol; out vec3 vCol; uniform vec2 uTrans; uniform float uZoom;
+  void main(){ vec2 p=aPos*uZoom+uTrans; vCol=aCol; gl_Position=vec4((p/vec2(800.0,450.0))-1.0,0.0,1.0); }`;
+  const fs = `#version 300 es
+  precision highp float; in vec3 vCol; out vec4 fc; void main(){ fc=vec4(vCol,1.0); }`;
+  if (!glprog) {
+    const prog = gl.createProgram();
+    const sh = (t, s) => { const x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); gl.attachShader(prog, x); };
+    sh(gl.VERTEX_SHADER, vs); sh(gl.FRAGMENT_SHADER, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error('link: '+gl.getProgramInfoLog(prog));
+    glprog = prog;
+  }
+  // flatten: each hexagon = 6 verts as a TRIANGLE_FAN? webgl2 has no fan draw by index; build
+  // 4 triangles (12 idx) per hexagon from fan order.
+  const tris = [];
+  const verts = [];
+  for (let i = 0; i < shapes.length; i++) {
+    const p = shapes[i], col = PAL[i%PAL.length];
+    const base = i*6;
+    for (let k = 0; k < 6; k++) verts.push(p[k][0], p[k][1], ...hexColor(col));
+    // fan triangulation: (0,k,k+1) for k=1..4
+    for (let k = 1; k <= 4; k++) tris.push(base, base+k, base+((k+1)%6));
+  }
+  const vbo = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+  const ebo = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(tris), gl.STATIC_DRAW);
+  glBuffers = { vbo, ebo, vcount: tris.length, n: shapes.length };
+  glCount = tris.length;
+  const pa = gl.getAttribLocation(glprog, 'aPos');
+  const pc = gl.getAttribLocation(glprog, 'aCol');
+  gl.enableVertexAttribArray(pa); gl.enableVertexAttribArray(pc);
+  gl.vertexAttribPointer(pa, 2, gl.FLOAT, false, 5*4, 0);
+  gl.vertexAttribPointer(pc, 3, gl.FLOAT, false, 5*4, 2*4);
+  glLocT = gl.getUniformLocation(glprog, 'uTrans');
+  glLocS = gl.getUniformLocation(glprog, 'uScale');
+  glLocZ = gl.getUniformLocation(glprog, 'uZoom');
+}
+function hexColor(hex){ const n=parseInt(hex.slice(1),16); return [(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]; }
+function glDrawFrame(zoom, tx, ty){ gl.useProgram(glprog);
+  gl.uniform2f(glLocT, tx, ty); gl.uniform1f(glLocZ, zoom);
+  gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.vbo); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, glBuffers.ebo);
+  gl.drawElements(gl.TRIANGLES, glCount, gl.UNSIGNED_INT, 0);
+}
+
+// ---- renderer factories ----
+function makeSVG(shapes, zoom, tx, ty) {
+  svgwrap.style.display = 'block';
+  svgwrap.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', `${tx-800/zoom} ${ty-450/zoom} ${1600/zoom} ${900/zoom}`);
+  const g = document.createElementNS(ns, 'g');
+  const t0 = performance.now();
+  for (let i = 0; i < shapes.length; i++) {
+    const poly = document.createElementNS(ns, 'polygon');
+    poly.setAttribute('points', shapes[i].map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '));
+    poly.setAttribute('fill', PAL[i%PAL.length]);
+    g.appendChild(poly);
+  }
+  svg.appendChild(g); svgwrap.appendChild(svg);
+  const buildMs = performance.now() - t0;
+  return { svg, buildMs, setView: (zoom, tx, ty)=>svg.setAttribute('viewBox', `${tx-800/zoom} ${ty-450/zoom} ${1600/zoom} ${900/zoom}`) };
+}
+// Simplified canvas2d: draw all polys each frame under transform.
+function makeCanvas2D2(shapes) {
+  const ctx = cv2d.getContext('2d');
+  return { draw: (zoom, tx, ty) => {
+    ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,W,H);
+    ctx.translate(-tx*zoom, -ty*zoom); ctx.scale(zoom, zoom);
+    ctx.beginPath();
+    for (let i = 0; i < shapes.length; i++) {
+      ctx.fillStyle = PAL[i%PAL.length];
+      const p = shapes[i];
+      ctx.moveTo(p[0][0], p[0][1]);
+      for (let k = 1; k < p.length; k++) ctx.lineTo(p[k][0], p[k][1]);
+      ctx.closePath(); ctx.fill();
+    }
+  } };
+}
+
+// ---- metrics ----
+function pct(arr, p){ const s=[...arr].sort((a,b)=>a-b); return s[Math.min(s.length-1, Math.floor(s.length*p))]; }
+
+async function animFrames(draw, secs){
+  let t0 = performance.now(); let prev = t0; let frames=0; const dts=[]; const draws=[];
+  await new Promise((resolve)=>{
+    function loop(now){ const dt=now-prev; prev=now; frames++; dts.push(dt);
+      const ph=((now-t0)/1000)*2*Math.PI;
+      const s=performance.now(); draw(1+0.5*Math.sin(ph), ph*40 % 2000, ph*25 % 1000); draws.push(performance.now()-s);
+      if (now - t0 < secs*1000) requestAnimationFrame(loop); else resolve(dts);
+    }
+    requestAnimationFrame(loop);
+  });
+  return { frames, meanMs: dts.reduce((a,b)=>a+b,0)/dts.length, p50: pct(dts,0.5), p95: pct(dts,0.95),
+           drawMean: draws.reduce((a,b)=>a+b,0)/draws.length, drawP95: pct(draws,0.95) };
+}
+
+async function benchAll(){
+  const out = { webgl: gl?{renderer: gl.getParameter(gl.RENDERER), version: gl.getParameter(gl.VERSION)} : null };
+  out.sizes = [];
+  for (const n of [1000, 5000, 10000, 25000]) {
+    const shapes = gen(n);
+    const row = { n, svg:{}, canvas2d:{}, webgl:{} };
+
+    // SVG
+    try {
+      const m = makeSVG(shapes); row.svg.buildMs = m.buildMs;
+      const a = await animFrames((z,tx,ty)=>{ m.setView(z,tx,ty); }, 2.0);
+      row.svg.anim = a; svgwrap.innerHTML=''; svgwrap.style.display='none';
+    } catch(e){ row.svg.error = String(e); }
+
+    // Canvas2D
+    try {
+      const m = makeCanvas2D2(shapes);
+      const a = await animFrames((z,tx,ty)=>{ m.draw(z,tx,ty); }, 2.0);
+      row.canvas2d.anim = a;
+    } catch(e){ row.canvas2d.error = String(e); }
+
+    // WebGL2
+    try {
+      if (gl) {
+        glInit(shapes);
+        const t0 = performance.now();
+        for (let i=0;i<120;i++) glDrawFrame(1, 0, 0);
+        gl.finish();
+        row.webgl.staticMs = (performance.now()-t0)/120;
+        const a = await animFrames((z,tx,ty)=>{ glDrawFrame(z,tx,ty); }, 2.0);
+        row.webgl.anim = a;
+      } else row.webgl.error = 'no-webgl2';
+    } catch(e){ row.webgl.error = String(e); }
+    out.sizes.push(row);
+  }
+  return out;
+}
+window.bench = { all: benchAll };
+if (new URLSearchParams(location.search).has('submit')) {
+  window.addEventListener('load', async () => {
+    try {
+      const r = await benchAll();
+      await fetch('/result', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(r) });
+      document.title = 'BENCH_DONE';
+    } catch (e) {
+      document.title = 'BENCH_ERR';
+      try { await fetch('/result', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ fatal: String(e), stack: String(e && e.stack) }) }); } catch {}
+    }
+  });
+}
+document.title = 'nest-viewport-bench-ready';
+</script>
+</body>
+</html>
