@@ -60,4 +60,5 @@ jobs:
           releaseName: 'v__VERSION__'
           releaseDraft: true
           prerelease: false
-          tauriScript: 'bun'
+          # tauri-action appends 'build'; plain 'bun' would run Bun's bundler, not the Tauri CLI.
+          tauriScript: bun run tauri

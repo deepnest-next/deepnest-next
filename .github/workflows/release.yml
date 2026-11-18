@@ -86,7 +86,8 @@ jobs:
           releaseName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
           releaseDraft: true
           prerelease: false
-          tauriScript: bun
+          # tauri-action appends 'build'; plain 'bun' would run Bun's bundler, not the Tauri CLI.
+          tauriScript: bun run tauri
           args: --bundles deb,rpm,appimage
 
       # Always expose the produced bundles as downloadable workflow artifacts,
