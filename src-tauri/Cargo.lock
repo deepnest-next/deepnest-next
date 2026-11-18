@@ -2711,7 +2711,7 @@ dependencies = [
 [[package]]
 name = "nest-adapters"
 version = "0.0.1"
-source = "git+https://github.com/deepnest-next/rust-api-server?branch=feat%2Fnest-service#f17eac5fc2897d4f57c5e90213bf81f353d76222"
+source = "git+https://github.com/deepnest-next/rust-api-server?branch=main#a9e271b4777e61449a00698b3e758855b890fad8"
 dependencies = [
  "cavalier_contours",
  "nesting-core",
@@ -2722,7 +2722,7 @@ dependencies = [
 [[package]]
 name = "nest-service"
 version = "0.0.1"
-source = "git+https://github.com/deepnest-next/rust-api-server?branch=feat%2Fnest-service#f17eac5fc2897d4f57c5e90213bf81f353d76222"
+source = "git+https://github.com/deepnest-next/rust-api-server?branch=main#a9e271b4777e61449a00698b3e758855b890fad8"
 dependencies = [
  "base64 0.23.1",
  "calamine",
@@ -2740,7 +2740,7 @@ dependencies = [
 [[package]]
 name = "nesting-babushka"
 version = "0.0.1"
-source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=feat%2Fnesting-io#ec5fcbafe373ca961940bbf539dd622489e7fa41"
+source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=main#36b27ab4ad2fe80c696d0143600a28e3874febff"
 dependencies = [
  "i_overlay",
  "nesting-core",
@@ -2750,7 +2750,7 @@ dependencies = [
 [[package]]
 name = "nesting-core"
 version = "0.0.1"
-source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=feat%2Fnesting-io#ec5fcbafe373ca961940bbf539dd622489e7fa41"
+source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=main#36b27ab4ad2fe80c696d0143600a28e3874febff"
 dependencies = [
  "serde",
  "serde_json",
@@ -2760,7 +2760,7 @@ dependencies = [
 [[package]]
 name = "nesting-io"
 version = "0.0.1"
-source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=feat%2Fnesting-io#ec5fcbafe373ca961940bbf539dd622489e7fa41"
+source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=main#36b27ab4ad2fe80c696d0143600a28e3874febff"
 dependencies = [
  "acadrust",
  "kurbo",
@@ -2774,7 +2774,7 @@ dependencies = [
 [[package]]
 name = "nesting-nfp"
 version = "0.0.1"
-source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=feat%2Fnesting-io#ec5fcbafe373ca961940bbf539dd622489e7fa41"
+source = "git+https://github.com/deepnest-next/rust-nesting-lib?branch=main#36b27ab4ad2fe80c696d0143600a28e3874febff"
 dependencies = [
  "anyhow",
  "approx",
@@ -4711,7 +4711,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.3",
+ "getrandom 0.3.4",
  "once_cell",
  "rustix",
  "windows-sys 0.60.2",

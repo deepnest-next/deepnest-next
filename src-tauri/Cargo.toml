@@ -30,8 +30,7 @@ tauri-plugin-fs = "2"
 tauri-plugin-store = "2"
 tauri-plugin-opener = "2"
 # The nesting pipelines and job handling behind rust-api-server, run in-process.
-# TODO: switch to `branch = "main"` once deepnest-next/rust-api-server#110 (nest-service) is merged.
-nest-service = { git = "https://github.com/deepnest-next/rust-api-server", branch = "feat/nest-service" }
+nest-service = { git = "https://github.com/deepnest-next/rust-api-server", branch = "main" }
 
 [dev-dependencies]
 serde_json = "1.0"
