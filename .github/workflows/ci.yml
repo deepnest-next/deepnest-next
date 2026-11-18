@@ -18,9 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: System libraries
+        # A stalled mirror connection once hung this step for 25 min (the job default is 6 h).
+        timeout-minutes: 10
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev \
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y libwebkit2gtk-4.1-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev \
             libayatana-appindicator3-dev librsvg2-dev webkit2gtk-driver xvfb dbus-x11
       - uses: dtolnay/rust-toolchain@stable
       - name: Private git dependencies
