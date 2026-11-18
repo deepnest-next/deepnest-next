@@ -1,25 +1,28 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "MyApp",
+  "productName": "deepnest-next",
   "version": "2.0.0",
-  "identifier": "com.tauri-solid-ts-tailwind-vite.dev",
+  "identifier": "net.deepnest.next",
   "build": {
-    "beforeDevCommand": "bun run dev",
+    "frontendDist": "../ui/dist",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "bun run build",
-    "frontendDist": "../dist"
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "bash scripts/fetch-ui.sh"
   },
   "app": {
     "windows": [
       {
-        "title": "app",
-        "width": 800,
-        "height": 600,
+        "label": "main",
+        "title": "deepnest",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 900,
+        "minHeight": 600,
         "resizable": true
       }
     ],
     "security": {
-      "csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self'; connect-src ipc: http://ipc.localhost"
+      "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src ipc: http://ipc.localhost"
     }
   },
   "bundle": {

@@ -1,40 +1,43 @@
+# SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Deepnest-Commercial
+# Build, unit-test and end-to-end-test the desktop app (workspace UI release + Rust backend).
+# Needs the secret DEEPNEST_REPOS_TOKEN: a token with read access to the private
+# deepnest-next repositories (rust-api-server, rust-nesting-lib, workspace-ui releases).
 name: CI
-on: 
-  pull_request:
-    branches:
-      - main
+on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
 
-env:
-  CARGO_TERM_COLOR: always
+# The repo token only checks out this repo; other repos use DEEPNEST_REPOS_TOKEN.
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  desktop:
+    runs-on: ubuntu-24.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.DEEPNEST_REPOS_TOKEN }}
+      GH_TOKEN: ${{ secrets.DEEPNEST_REPOS_TOKEN }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
-      - name: Checkout repository 🛎️
-        uses: actions/checkout@v7
-        
-      - name: Install Tauri system dependencies
+      - uses: actions/checkout@v4
+      - name: System libraries
+        # Mirrors are sometimes very slow (~100 kB/s for the 25 MB webkit package); bound the
+        # step anyway, the job default is 6 h.
+        timeout-minutes: 30
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
-      
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Configure Rust dependency caching
-        uses: Swatinem/rust-cache@v2
-        
-      - name: Setup Bun runtime
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-        
-      - name: Install frontend dependencies
-        run: bun install
-
-      - name: Build Tauri application 🔧
-        run: bun run build:tauri
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y libwebkit2gtk-4.1-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev \
+            libayatana-appindicator3-dev librsvg2-dev webkit2gtk-driver xvfb dbus-x11
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Private git dependencies
+        run: git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+      - name: Workspace UI release
+        run: bash scripts/fetch-ui.sh
+      - name: Unit tests
+        working-directory: src-tauri
+        run: cargo test
+      - name: tauri-driver
+        run: cargo install tauri-driver --locked
+      - name: End-to-end (WebDriver)
+        run: bash scripts/e2e-docker.sh
