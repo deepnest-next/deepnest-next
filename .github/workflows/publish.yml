@@ -13,6 +13,9 @@ jobs:
         platform: [macos-latest, ubuntu-latest, windows-latest]
         
     runs-on: ${{ matrix.platform }}
+    env:
+      GH_TOKEN: ${{ secrets.DEEPNEST_REPOS_TOKEN }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v7
@@ -28,6 +31,13 @@ jobs:
         with:
           bun-version: latest
           
+      # The UI release (workspace-ui) and nest-service (rust-api-server) live in private
+      # repos: gh (fetch-ui.sh) uses GH_TOKEN, cargo's git uses the rewrite below. The
+      # release upload keeps the repo's own GITHUB_TOKEN.
+      - name: Private repositories
+        shell: bash
+        run: git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:

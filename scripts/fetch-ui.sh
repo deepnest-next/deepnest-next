@@ -45,7 +45,12 @@ else
   exit 1
 fi
 
-ACTUAL="$(sha256sum "$TMP/$ASSET" | cut -d' ' -f1)"
+# macOS runners have shasum, not sha256sum.
+if command -v sha256sum >/dev/null; then
+  ACTUAL="$(sha256sum "$TMP/$ASSET" | cut -d' ' -f1)"
+else
+  ACTUAL="$(shasum -a 256 "$TMP/$ASSET" | cut -d' ' -f1)"
+fi
 if [[ "$ACTUAL" != "$EXPECTED" ]]; then
   echo "workspace-ui: checksum mismatch for $ASSET (expected $EXPECTED, got $ACTUAL)" >&2
   exit 1
