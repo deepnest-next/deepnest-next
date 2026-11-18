@@ -8,6 +8,10 @@ on:
     branches: [main]
   pull_request:
 
+# The repo token only checks out this repo; other repos use DEEPNEST_REPOS_TOKEN.
+permissions:
+  contents: read
+
 jobs:
   desktop:
     runs-on: ubuntu-24.04
