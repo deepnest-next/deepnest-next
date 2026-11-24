@@ -9,6 +9,9 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  # Let cargo fetch the private engine git deps via the git CLI, which honors
+  # the token-authenticated URL rewrite configured below.
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
 
 jobs:
   build:
@@ -16,7 +19,16 @@ jobs:
     steps:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v7
-        
+
+      # The engine crates (rust-api-server, rust-nesting-lib, node-dxf2svg-processor)
+      # live in private repos; DEEPNEST_REPOS_TOKEN grants cargo read access to them.
+      - name: Authenticate cargo for private engine repos
+        shell: bash
+        env:
+          DEEPNEST_REPOS_TOKEN: ${{ secrets.DEEPNEST_REPOS_TOKEN }}
+        run: |
+          git config --global url."https://x-access-token:${DEEPNEST_REPOS_TOKEN}@github.com/".insteadOf "https://github.com/"
+
       - name: Install Tauri system dependencies
         run: |
           sudo apt-get update
